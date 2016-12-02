@@ -7,16 +7,38 @@ class threading_http_server(socketserver.ThreadingMixIn, HTTPServer):
 
 class image_server_handler(CGIHTTPRequestHandler):
     def do_POST(self):
-        data_string = self.rfile.read(int(self.headers['Content-Length']))
-        with open('test.jpeg', 'wb') as file_test:
-            print(data_string)
-            file_test.write(data_string)
+        # download image and response
+        image = self.download_image()
+        MAC = self.get_MAC()
+        time = self.get_time()
+
+        # response 301 for format error
+        if len(image) == 0 or MAC == None or time == None:
+            self.send_response(301)
+            self.end_headers()
+            return
+
+        # response ok
         self.send_response(200)
         self.end_headers()
-        pass
+        self.process_image(image, MAC, time)
+        return
+
     def do_GET(self):
         pass
 
+    def download_image(self):
+        content_length = int(self.headers['Content-Length'] )
+        return self.rfile.read(content_length )
+
+    def get_MAC(self):
+        return self.headers['MAC']
+
+    def get_time(self):
+        return self.headers['Time']
+
+    def process_image(self, image, MAC, time):
+        pass
 
 if __name__ == '__main__':
     port = 9999
