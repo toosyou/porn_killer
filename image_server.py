@@ -1,50 +1,32 @@
-import sys
-import socketserver
-from http.server import HTTPServer, CGIHTTPRequestHandler
+import tornado
+import tornado.web
+from tornado import httpserver
 
-class threading_http_server(socketserver.ThreadingMixIn, HTTPServer):
-    pass
+class MainHandler(tornado.web.RequestHandler):
+    def post(self):
+        header_MAC = self.request.headers.get('MAC')
+        header_Time = self.request.headers.get('Time')
+        header_Length = self.request.headers.get('Content-Length')
+        image = self.request.body
 
-class image_server_handler(CGIHTTPRequestHandler):
-    def do_POST(self):
-        # download image and response
-        if int(self.headers['Content-Length']) > 10000000: # larger than 100M
-            self.send_response(500)
-            return
-        image = self.download_image()
-        MAC = self.get_MAC()
-        time = self.get_time()
-
-        # response 301 for format error
-        if len(image) == 0 or MAC == None or time == None:
-            self.send_response(301)
-            self.end_headers()
+        if not header_MAC or not header_Time:
+            self.set_status(400)
+            self.finish()
             return
 
-        # response ok
-        self.send_response(200)
-        self.end_headers()
-        self.process_image(image, MAC, time)
-        return
+        print(header_MAC, header_Time, header_Length)
+        with open('test.jpeg', 'wb') as out_jpg:
+            out_jpg.write(image)
 
-    def do_GET(self):
-        pass
+        self.set_status(200)
+        self.finish()
 
-    def download_image(self):
-        content_length = int(self.headers['Content-Length'] )
-        return self.rfile.read(content_length )
-
-    def get_MAC(self):
-        return self.headers['MAC']
-
-    def get_time(self):
-        return self.headers['Time']
-
-    def process_image(self, image, MAC, time):
-        pass
 
 if __name__ == '__main__':
-    port = 9999
-    httpd = threading_http_server(('', port), image_server_handler)
-    print("Starting simple_httpd on port: " + str(httpd.server_port))
-    httpd.serve_forever()
+    app = tornado.web.Application(
+        [
+            (r'/', MainHandler),
+            ],
+        )
+    app.listen(9999)
+    tornado.ioloop.IOLoop.current().start()
