@@ -13,6 +13,6 @@ def send_image(ip, port, image):
     return -2 # response not defined
 
 if __name__ == '__main__':
-    with open('tiny.jpeg', 'rb') as image_file:
+    with open('large.jpg', 'rb') as image_file:
         image = image_file.read()
     print(send_image('140.113.89.75', 9999, image))

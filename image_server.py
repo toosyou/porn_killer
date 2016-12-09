@@ -8,6 +8,9 @@ class threading_http_server(socketserver.ThreadingMixIn, HTTPServer):
 class image_server_handler(CGIHTTPRequestHandler):
     def do_POST(self):
         # download image and response
+        if int(self.headers['Content-Length']) > 10000000: # larger than 100M
+            self.send_response(500)
+            return
         image = self.download_image()
         MAC = self.get_MAC()
         time = self.get_time()
