@@ -2,7 +2,6 @@ import sys
 import requests
 from uuid import getnode as get_mac
 from time import gmtime, strftime
-from PIL import Image
 
 def send_image(ip, port, image):
     headers = {'MAC': str(get_mac()),
