@@ -18,8 +18,6 @@ class MainHandler(tornado.web.RequestHandler):
 
         print('from:', self.request.remote_ip)
         print('\tLength:', float(header_Length)/1024, 'KB')
-        with open('test.jpeg', 'wb') as out_jpg:
-            out_jpg.write(image)
 
         scores = caffe_preprocess_and_compute(image, caffe_transformer=tranformer, caffe_net=net, output_layers=['prob'])
         print('\tScore:', scores[1])
