@@ -2,13 +2,16 @@ import tornado
 import tornado.web
 from tornado import gen
 from tornado import httpserver
+from tornado import httpclient
 from image_client import send_image
+import requests
 
 index_gpu = 0
-gpu_ip = ['http://mip1070.toosyou.nctu.me']
-gpu_port = [9999]
+gpu_ip = ['http://140.113.207.182:8787']
 
 class MainHandler(tornado.web.RequestHandler):
+    requester = tornado.httpclient.AsyncHTTPClient()
+
     @gen.coroutine
     def post(self):
         header_MAC = self.request.headers.get('MAC')
@@ -23,11 +26,19 @@ class MainHandler(tornado.web.RequestHandler):
 
         print('from:', self.request.remote_ip)
         print('\tMAC:', header_MAC, 'Time:', header_Time, 'Length:', float(header_Length)/1024, 'KB')
-        with open('test.jpeg', 'wb') as out_jpg:
-            out_jpg.write(image)
 
         self.set_status(200)
         self.finish()
+
+        global index_gpu
+        this_index_gpu = index_gpu
+        index_gpu = (index_gpu+1)%len(gpu_ip)
+
+        req = tornado.httpclient.HTTPRequest(url=gpu_ip[this_index_gpu], method='POST', body=image)
+        response = yield gen.Task(self.requester.fetch, req)
+
+        print('\tScore:', float(response.headers['Score'])/1000.0 )
+        return
 
 
 if __name__ == '__main__':
