@@ -1,11 +1,15 @@
+from __future__ import print_function
+import sys
 import tornado
 import tornado.web
 from tornado import httpserver
-from subprocess import Popen
-from subprocess import PIPE
 
-classifier = Popen(['python', './classify_nsfw.py', '--model_def nsfw_model/deploy.prototxt',
-                        '--pretrained_model nsfw_model/resnet_50_1by2_nsfw.caffemodel'], stdin=PIPE, stdout=PIPE)
+sys.path.append('open_nsfw')
+import classify_nsfw
+from classify_nsfw import caffe_preprocess_and_compute, init_model
+
+net, tranformer = init_model('./open_nsfw/nsfw_model/deploy.prototxt',
+                                './open_nsfw/nsfw_model/resnet_50_1by2_nsfw.caffemodel')
 
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
@@ -17,8 +21,10 @@ class MainHandler(tornado.web.RequestHandler):
         with open('test.jpeg', 'wb') as out_jpg:
             out_jpg.write(image)
 
-        print(classifier.communicate(input=image))
+        scores = caffe_preprocess_and_compute(image, caffe_transformer=tranformer, caffe_net=net, output_layers=['prob'])
+        print('\tScore:', scores[1])
 
+        self.add_header('Score', int(scores[1]*10000) )
         self.set_status(200)
         self.finish()
 
