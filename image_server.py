@@ -1,8 +1,15 @@
 import tornado
 import tornado.web
+from tornado import gen
 from tornado import httpserver
+from image_client import send_image
+
+index_gpu = 0
+gpu_ip = ['http://mip1070.toosyou.nctu.me']
+gpu_port = [9999]
 
 class MainHandler(tornado.web.RequestHandler):
+    @gen.coroutine
     def post(self):
         header_MAC = self.request.headers.get('MAC')
         header_Time = self.request.headers.get('Time')
@@ -14,7 +21,8 @@ class MainHandler(tornado.web.RequestHandler):
             self.finish()
             return
 
-        print(header_MAC, header_Time, header_Length)
+        print('from:', self.request.remote_ip)
+        print('\tMAC:', header_MAC, 'Time:', header_Time, 'Length:', float(header_Length)/1024, 'KB')
         with open('test.jpeg', 'wb') as out_jpg:
             out_jpg.write(image)
 
