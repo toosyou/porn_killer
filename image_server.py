@@ -5,6 +5,7 @@ from tornado import httpserver
 from tornado import httpclient
 from image_client import send_image
 import requests
+import json
 
 index_gpu = 0
 gpu_ip = ['http://140.113.207.182:8787']
@@ -37,7 +38,19 @@ class MainHandler(tornado.web.RequestHandler):
         req = tornado.httpclient.HTTPRequest(url=gpu_ip[this_index_gpu], method='POST', body=image)
         response = yield gen.Task(self.requester.fetch, req)
 
-        print('\tScore:', float(response.headers['Score'])/1000.0 )
+        score = float(response.headers['Score'])/1000.0
+        print('\tScore:', score)
+
+        with open('./data/'+header_Time+'_'+header_MAC+'.jpg', 'wb') as out_image:
+            out_image.write(image)
+
+        output_data = {
+                'Time' : int(header_Time),
+                'MAC' : header_MAC,
+                'Score' : score
+                }
+        with open('./data/'+header_Time+'_'+header_MAC+'.json', 'w') as out_json:
+            json.dump(output_data, out_json)
         return
 
 
