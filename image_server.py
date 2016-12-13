@@ -8,7 +8,7 @@ import requests
 import json
 
 index_gpu = 0
-gpu_ip = ['http://140.113.207.182:8787']
+gpu_ip = ['http://mip1070.toosyou.nctu.me:8787', 'http://toosyou.nctu.me:8787']
 
 class MainHandler(tornado.web.RequestHandler):
     requester = tornado.httpclient.AsyncHTTPClient()
@@ -39,7 +39,7 @@ class MainHandler(tornado.web.RequestHandler):
         response = yield gen.Task(self.requester.fetch, req)
 
         score = float(response.headers['Score'])/1000.0
-        print('\tScore:', score)
+        print('\tThrough ', gpu_ip[this_index_gpu], 'Score:', score)
 
         with open('./data/'+header_Time+'_'+header_MAC+'.jpg', 'wb') as out_image:
             out_image.write(image)

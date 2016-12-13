@@ -21,4 +21,4 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'rb') as image_file:
         image = image_file.read()
 
-    print(send_image('140.113.207.182', 9999, image))
+    print(send_image('mip1070.toosyou.nctu.me', 9999, image))
