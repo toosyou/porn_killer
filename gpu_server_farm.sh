@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap "killall python" SIGINT SIGTERM EXIT
+
 for port in $(seq 9000 9009)
 do
     echo 'start server at port: ' $port
