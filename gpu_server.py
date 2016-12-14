@@ -27,10 +27,14 @@ class MainHandler(tornado.web.RequestHandler):
         self.finish()
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print('usage:', sys.argv[0], 'port_number')
+        sys.exit(-1)
     app = tornado.web.Application(
         [
             (r'/', MainHandler),
             ],
         )
-    app.listen(8787)
+    app.listen(int(sys.argv[1]))
+    print('start server at port:', sys.argv[1])
     tornado.ioloop.IOLoop.current().start()
