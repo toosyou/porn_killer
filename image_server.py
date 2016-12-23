@@ -39,11 +39,8 @@ class MainHandler(tornado.web.RequestHandler):
         req = tornado.httpclient.HTTPRequest(url=gpu_ip[this_index_gpu], method='POST', body=image)
         response = yield gen.Task(self.requester.fetch, req)
 
-        score = float(response.headers['Score'])/1000.0
+        score = float(response.headers['Score'])/10000.0
         print('\tThrough ', gpu_ip[this_index_gpu], 'Score:', score)
-
-        with open('./data/'+header_Time+'_'+header_MAC+'.jpg', 'wb') as out_image:
-            out_image.write(image)
 
         output_data = {
                 'Time' : int(header_Time),
@@ -51,8 +48,27 @@ class MainHandler(tornado.web.RequestHandler):
                 'Score' : score,
                 'Image' : str(base64.b64encode( image ) )
                 }
-        with open('./data/'+header_Time+'_'+header_MAC+'.json', 'w') as out_json:
-            json.dump(output_data, out_json)
+
+        history_filename = './data/history/'+header_Time+'_'+header_MAC
+        with open(history_filename+'.json', 'w') as out_history_json:
+            json.dump(output_data, out_history_json)
+
+        with open(history_filename+'.jpg', 'wb') as out_history_image:
+            out_history_image.write(image)
+
+        current_filename = './data/current'
+        with open(current_filename+'.json', 'w') as out_current_json:
+            json.dump(output_data, out_current_json)
+
+        with open(current_filename+'.jpg', 'wb') as out_current_image:
+            out_current_image.write(image)
+
+        if score >= 0.3:
+            dangerous_filename = './data/dangerous/'+header_Time+'_'+header_MAC
+            with open(dangerous_filename+'.json', 'w') as out_dangerous_json:
+                json.dump(output_data, out_dangerous_json)
+            with open(dangerous_filename+'.jpg', 'wb') as out_dangerous_image:
+                out_dangerous_image.write(image)
         return
 
 
