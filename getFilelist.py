@@ -15,12 +15,12 @@ while(1):
 	for file in reversed(dirs):
 		if(file[-4:] == "json"):
 			MACaddr = file[-20:-5]
-			time = file[0:14]
+			timestamp = file[0:14]
 			if(MACaddr in dict):
-				if(dict[MACaddr] < time):
-					dict[MACaddr] = time
+				if(dict[MACaddr] < timestamp):
+					dict[MACaddr] = timestamp
 			else:
-				dict[MACaddr] = time
+				dict[MACaddr] = timestamp
 
 	data = json.dumps(dict)
 	r = requests.post('http://0.0.0.0:8888',data)
