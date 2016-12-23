@@ -5,6 +5,8 @@ from image_client import send_image
 from datetime import datetime
 import base64
 
+re_num = 0
+
 while(1):
 	#filename = "./screenshot/"
 	file_name = "current_img.jpeg"
@@ -14,13 +16,23 @@ while(1):
 	#im = ImageGrab.grab().tobytes()
 	with open("current_img.jpeg", 'rb') as image_file:
 		image = image_file.read()
-	ret = send_image('mip1070.toosyou.nctu.me','9999',image)
-	if(ret != 0):
-		print("error")
-	else:
-		print("screenshot sent")
+	try:
+		ret = send_image('mip1070.toosyou.nctu.me','9999',image)
+		if(ret != 0):
+			print("error")
 
-	time.sleep(10)
+		else:
+			print("screenshot sent")
+
+		time.sleep(2)
+	
+	except:
+		
+		
+		re_num = re_num + 1
+		print("send fail, retry no."+str(re_num))
+		time.sleep(2)	
+		continue
 
 
 
