@@ -11,12 +11,14 @@ from classify_nsfw import caffe_preprocess_and_compute, init_model
 net, tranformer = init_model('./open_nsfw/nsfw_model/deploy.prototxt',
                                 './open_nsfw/nsfw_model/resnet_50_1by2_nsfw.caffemodel')
 
+port_listened = 0
+
 class MainHandler(tornado.web.RequestHandler):
     def post(self):
         header_Length = self.request.headers.get('Content-Length')
         image = self.request.body
 
-        print('from:', self.request.remote_ip)
+        print('from:', self.request.remote_ip, 'to', port_listened)
         print('\tLength:', float(header_Length)/1024, 'KB')
 
         scores = caffe_preprocess_and_compute(image, caffe_transformer=tranformer, caffe_net=net, output_layers=['prob'])
@@ -35,6 +37,7 @@ if __name__ == '__main__':
             (r'/', MainHandler),
             ],
         )
-    app.listen(int(sys.argv[1]))
+    port_listened = int(sys.argv[1])
+    app.listen( port_listened )
     print('start server at port:', sys.argv[1])
     tornado.ioloop.IOLoop.current().start()

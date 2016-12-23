@@ -6,6 +6,7 @@ from tornado import httpclient
 from image_client import send_image
 import requests
 import json
+import base64
 
 index_gpu = 0
 gpu_ip = ['http://mip1070.toosyou.nctu.me:8787', 'http://toosyou.nctu.me:8787']
@@ -47,7 +48,8 @@ class MainHandler(tornado.web.RequestHandler):
         output_data = {
                 'Time' : int(header_Time),
                 'MAC' : header_MAC,
-                'Score' : score
+                'Score' : score,
+                'Image' : str(base64.b64encode( image ) )
                 }
         with open('./data/'+header_Time+'_'+header_MAC+'.json', 'w') as out_json:
             json.dump(output_data, out_json)
