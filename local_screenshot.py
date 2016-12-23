@@ -14,7 +14,11 @@ while(1):
 	#im = ImageGrab.grab().tobytes()
 	with open("current_img.jpeg", 'rb') as image_file:
 		image = image_file.read()
-	print(send_image('mip1070.toosyou.nctu.me','9999',image))
+	ret = send_image('mip1070.toosyou.nctu.me','9999',image)
+	if(ret != 0):
+		print("error")
+	else:
+		print("data sent")
 
 	time.sleep(10)
 
