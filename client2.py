@@ -2,7 +2,7 @@ import requests
 import base64
 import json
 
-r = requests.get('http://0.0.0.0:7777?MAC=168091489920666').text
+r = requests.get('http://0.0.0.0:8888?MAC=168091489920666').text
 
 
 myres = json.loads(r)
