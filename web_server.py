@@ -15,9 +15,9 @@ class MainHandler(tornado.web.RequestHandler):
 			myres = json.dumps(myres)
 			self.write(myres)
 		"""
-		with open('data.json') as data_file:    
+		with open('../data_file/current.json') as data_file:    
 			data = json.load(data_file)
-			myres = {"photo":data["photo"],"msg":data["msg"]}
+			myres = {"photo":data["Image"],"msg":data["Score"]}
 			myres = json.dumps(myres)
 			self.write(myres)
 
