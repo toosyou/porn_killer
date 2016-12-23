@@ -20,6 +20,6 @@ for file in reversed(dirs):
 			dict[MACaddr] = time
 
 data = json.dumps(dict)
-r = requests.post('http://0.0.0.0:7777',data)
+r = requests.post('http://0.0.0.0:8888',data)
 
 
