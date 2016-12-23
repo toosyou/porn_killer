@@ -1,6 +1,7 @@
 import os, sys
 import json
 import requests
+import time
 
 # Open a file
 path = "../data_file/history/"
@@ -23,5 +24,5 @@ while(1):
 
 	data = json.dumps(dict)
 	r = requests.post('http://0.0.0.0:8888',data)
-	sleep(1)
+	time.sleep(1)
 
