@@ -24,14 +24,14 @@ while(1):
 		else:
 			print("screenshot sent")
 
-		time.sleep(2)
+		time.sleep(3)
 	
 	except:
 		
 		
 		re_num = re_num + 1
 		print("send fail, retry no."+str(re_num))
-		time.sleep(2)	
+		time.sleep(3)	
 		continue
 
 
