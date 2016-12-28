@@ -9,10 +9,16 @@ dics = {}
 
 
 class MainHandler(tornado.web.RequestHandler):
+	def set_default_headers(self):
+        	#print "setting headers!!!"
+        	self.set_header("Access-Control-Allow-Origin", "*")
+        	self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        	self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+
 	def get(self):
 		MAC = self.get_argument("MAC")
 		PERIOD = self.get_argument("PERIOD")
-		print(PERIOD)
+		#print(PERIOD)
 		if PERIOD=="0":
 			if(MAC in dics):
 			
@@ -54,7 +60,7 @@ class MainHandler(tornado.web.RequestHandler):
 			end = 0
 			current = 0
 			update = 0
-			time_dict = dict()
+			#time_dict = dict()
 			period_list = []
 			for tt in time_list:
 				print(tt)
@@ -65,25 +71,28 @@ class MainHandler(tornado.web.RequestHandler):
 					update = 1			
 				else:
 					if tt > current:
-						current = current + 100
-						update = 1
-						if tt > current:
-							end = current
+						if tt-current>300:
+							#print("tt: "+str(tt)+" current: "+str(current))
+							time_dict = dict()
 							time_dict["start"]=start
-							time_dict["end"] = end
+							time_dict["end"] = current
 							period_list.append(time_dict.copy())
 							start = tt
 							current = tt
 							update = 0
+						else:
+							curent = tt
+							update = 1
 							 
 			if update!=0:
+				time_dict = dict()
 				time_dict["start"]=start
 				time_dict["end"] = current
 				period_list.append(time_dict.copy())
-			for item in period_list:
-				print(item)			
+			#for item in period_list:
+				#print(item)			
 
-			total_period = len(time_list)*3/60
+			total_period = len(time_list)
 			myres = {"total":total_period, "periods":period_list}
 			myres = json.dumps(myres)
 			self.write(myres)
@@ -98,7 +107,7 @@ class MainHandler(tornado.web.RequestHandler):
 			else:
 				dics[key] = data_json[key]
 
-		print(dics)
+		#print(dics)
 		self.write("ok")
 
 def make_app():
