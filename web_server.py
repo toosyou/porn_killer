@@ -81,7 +81,7 @@ class MainHandler(tornado.web.RequestHandler):
 							current = tt
 							update = 0
 						else:
-							curent = tt
+							current = tt
 							update = 1
 							 
 			if update!=0:
@@ -92,7 +92,7 @@ class MainHandler(tornado.web.RequestHandler):
 			#for item in period_list:
 				#print(item)			
 
-			total_period = len(time_list)
+			total_period = len(time_list)*3/60
 			myres = {"total":total_period, "periods":period_list}
 			myres = json.dumps(myres)
 			self.write(myres)
