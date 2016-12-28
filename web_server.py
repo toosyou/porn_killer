@@ -63,7 +63,6 @@ class MainHandler(tornado.web.RequestHandler):
 			#time_dict = dict()
 			period_list = []
 			for tt in time_list:
-				print(tt)
 				if(start_flag ==0):
 					start_flag = 1
 					start = tt
