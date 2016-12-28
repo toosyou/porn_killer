@@ -10,10 +10,11 @@ import requests
 import json
 import base64
 import time
+from termcolor import colored
 
 max_gpu_retry = 5
 dangerous_value = 0.3
-max_amount_file = 1000
+max_amount_file = 2000
 index_gpu = 0
 gpu_ip = ['http://mip1070.toosyou.nctu.me:8787', 'http://toosyou.nctu.me:8787']
 calculated = False
@@ -21,19 +22,21 @@ calculated = False
 def handle_old_file():
     global calculated
     localtime = time.asctime( time.localtime(time.time() ) )
-    print(localtime, ':')
+    print(localtime, ':\t', end='')
     if calculated == True:
         calculated = False
         subprocess.call("ls ./data/history/* -dt | sed -e '1,"+str(max_amount_file)+"d' | xargs -d '\\n' rm -f", shell=True)
         subprocess.call("ls ./data/dangerous/* -dt | sed -e '1,"+str(max_amount_file)+"d' | xargs -d '\\n' rm -f", shell=True)
-        print('\tOLD HISTORY & DANGEROUS FILE REMOVED!')
-    print('\tfile checked')
+        print(colored('OLD HISTORY & DANGEROUS FILE REMOVED!', 'red', attrs=['bold']))
+    else:
+        print('\tfile checked')
     return
 
 class MainHandler(tornado.web.RequestHandler):
 
     @gen.coroutine
     def post(self):
+        global calculated
         header_MAC = self.request.headers.get('MAC')
         header_Time = self.request.headers.get('Time')
         header_Length = self.request.headers.get('Content-Length')
@@ -49,8 +52,8 @@ class MainHandler(tornado.web.RequestHandler):
             self.finish()
             calculated = True
 
-        print('from:', self.request.remote_ip)
-        print('\tMAC:', header_MAC, 'Time:', header_Time, 'Length:', float(header_Length)/1024, 'KB')
+        print('from:', self.request.remote_ip )
+        print('\tMAC:', colored(header_MAC, 'green'), 'Time:', header_Time, 'Length:', float(header_Length)/1024, 'KB')
 
         # get score from gpu servers
         this_index_gpu = self.get_index()
@@ -63,7 +66,9 @@ class MainHandler(tornado.web.RequestHandler):
                 response = yield gen.Task(requester.fetch, req)
 
                 score = float(response.headers['Score'])/10000.0
-                print('\tThrough ', gpu_ip[this_index_gpu], 'Score:', score)
+                colored_score = colored('\tScore: '+str(score), 'red', attrs=['underline', 'bold']) if score >= dangerous_value else colored('\tScore: '+str(score), 'blue')
+                print('\tThrough\t', gpu_ip[this_index_gpu] )
+                print(colored_score)
 
                 output_data = {
                     'Time' : int(header_Time),
@@ -75,13 +80,13 @@ class MainHandler(tornado.web.RequestHandler):
                 if i == max_gpu_retry-1:
                     print('\t', max_gpu_retry, 'ERROR MAX-RETRY EXCEED, DROP!')
                     return
-                print('\tERROR OCCURED WITH SCORE, RETRY!', i)
+                print(colored('\tERROR OCCURED WITH SCORE, RETRY! ' + str(i), 'yellow') )
                 continue
             break
 
         # save data and image
         self.output_image_json(output_data, image)
-
+        calculated = True
         return
 
     def get_index(self):
