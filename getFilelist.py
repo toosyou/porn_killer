@@ -16,8 +16,9 @@ while(1):
 	print("running")
 	for file in reversed(dirs):
 		if(file[-4:] == "json"):
-			MACaddr = file[-20:-5]
-			timestamp = file[0:14]
+			perameter = file.split("_")
+			MACaddr = perameter[0]
+			timestamp = perameter[1][:-5]
 			if(MACaddr in dict):
 				if(dict[MACaddr] < timestamp):
 					dict[MACaddr] = timestamp
