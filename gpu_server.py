@@ -21,7 +21,14 @@ class MainHandler(tornado.web.RequestHandler):
         print('from:', self.request.remote_ip, 'to', port_listened)
         print('\tLength:', float(header_Length)/1024, 'KB')
 
-        scores = caffe_preprocess_and_compute(image, caffe_transformer=tranformer, caffe_net=net, output_layers=['prob'])
+        try:
+            scores = caffe_preprocess_and_compute(image, caffe_transformer=tranformer, caffe_net=net, output_layers=['prob'])
+        except:
+            print('\tERROR OCCURED!')
+            self.set_status(500)
+            self.finish()
+            return
+
         print('\tScore:', scores[1])
 
         self.add_header('Score', int(scores[1]*10000) )
