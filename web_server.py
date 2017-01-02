@@ -3,6 +3,7 @@ import tornado.web
 import base64
 import json
 import os, sys
+import datetime
 
 path = "../data_file/dangerous/"
 dics = {}
@@ -18,7 +19,10 @@ class MainHandler(tornado.web.RequestHandler):
 	def get(self):
 		MAC = self.get_argument("MAC")
 		PERIOD = self.get_argument("PERIOD")
-		#print(PERIOD)
+		now = datetime.datetime.now()
+		current_time =  now.strftime("%Y%m%d%H%M%S")
+		past_time = now - datetime.timedelta(days=1)
+		last_24 = past_time.strftime("%Y%m%d%H%M%S")
 		if PERIOD=="0":
 			if(MAC in dics):
 			
@@ -53,7 +57,7 @@ class MainHandler(tornado.web.RequestHandler):
 					perameter = file.split("_")
 					MACaddr = perameter[1][:-5]
 					timestamp = perameter[0]
-					if(MACaddr == MAC):
+					if(MACaddr == MAC and (int(timestamp) <= int(current_time)) and (int(timestamp) > int(last_24)) ):
 						time_list.append(int(timestamp))
 			start_flag = 0
 			start = 0
@@ -75,6 +79,10 @@ class MainHandler(tornado.web.RequestHandler):
 							time_dict = dict()
 							time_dict["start"]=start
 							time_dict["end"] = current
+							file_name = "../data_file/dangerous/" + str(start) + "_" + str(MAC)+".jpg"
+							with open(file_name, "rb") as f:
+								img = base64.b64encode(f.read())
+							time_dict["photo"] = str(img)
 							period_list.append(time_dict.copy())
 							start = tt
 							current = tt
@@ -87,6 +95,10 @@ class MainHandler(tornado.web.RequestHandler):
 				time_dict = dict()
 				time_dict["start"]=start
 				time_dict["end"] = current
+				file_name = "../data_file/dangerous/" + str(start) + "_" + str(MAC)+".jpg"
+				with open(file_name, "rb") as f:
+					img = base64.b64encode(f.read())
+				time_dict["photo"] = str(img)
 				period_list.append(time_dict.copy())
 			#for item in period_list:
 				#print(item)			
