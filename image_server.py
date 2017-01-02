@@ -10,17 +10,22 @@ import requests
 import json
 import base64
 import time
+from datetime import datetime
 from termcolor import colored
+from subprocess import DEVNULL
 
 max_gpu_retry = 5
 dangerous_value = 0.3
-max_amount_file = 2000
+max_amount_file = 20000
 index_gpu = 0
 gpu_ip = ['http://mip1070.toosyou.nctu.me:8787', 'http://toosyou.nctu.me:8787']
 gpu_error_count = [0, 0]
 max_gpu_error_count = 5
 gpu_recover_time = 5 #min
 calculated = False
+clear_lwt_time = 1 #min
+last_watching_time = dict()
+email_list = ['toosyou70207@gmail.com', 'hankhplee@gmail.com', 'kjkj33333@gmail.com']
 
 def recover_gpu():
     global gpu_error_count
@@ -39,11 +44,18 @@ def handle_old_file():
     print(localtime, ':\t', end='')
     if calculated == True:
         calculated = False
-        subprocess.call("ls ./data/history/* -dt | sed -e '1,"+str(max_amount_file)+"d' | xargs -d '\\n' rm -f", shell=True)
-        subprocess.call("ls ./data/dangerous/* -dt | sed -e '1,"+str(max_amount_file)+"d' | xargs -d '\\n' rm -f", shell=True)
+        subprocess.Popen("ls ./data/history/* -dt | sed -e '1,"+str(max_amount_file)+"d' | xargs -d '\\n' rm -f", shell=True)
+        subprocess.Popen("ls ./data/dangerous/* -dt | sed -e '1,"+str(max_amount_file)+"d' | xargs -d '\\n' rm -f", shell=True)
         print(colored('OLD HISTORY & DANGEROUS FILE REMOVED!', 'red', attrs=['bold']))
     else:
         print('\tfile checked')
+    return
+
+def clear_last_watching_time():
+    global last_watching_time
+    last_watching_time.clear()
+    localtime = time.asctime( time.localtime(time.time() ) )
+    print(localtime, ':\tlast_watching_time cleared!')
     return
 
 class MainHandler(tornado.web.RequestHandler):
@@ -110,6 +122,13 @@ class MainHandler(tornado.web.RequestHandler):
 
         # save data and image
         self.output_image_json(output_data, image)
+
+        # send mail if dangerous
+        global last_watching_time
+        if score >= dangerous_value and header_MAC not in last_watching_time:
+            last_watching_time[header_MAC] = int(header_Time)
+            self.send_dangerous_mail(header_MAC, score, header_Time)
+
         return
 
     def gpu_succeed(self, this_index_gpu):
@@ -164,6 +183,17 @@ class MainHandler(tornado.web.RequestHandler):
                 out_dangerous_image.write(image)
         return
 
+    def send_dangerous_mail(self, MAC, score, time):
+        time_str = datetime.strftime(datetime.strptime(time, '%Y%m%d%H%M%S'), '%Y %B %d %H:%M:%S')
+        receiver = "'" + ','.join(email_list) + "'"
+        subject = "'Your child " + MAC + " is watching something nsfw'"
+        body = "'MAC: " + MAC + "\nScore: " + str(score) + "\nTime: " + time_str +"'"
+        attach_name = time + '_' + MAC + '.jpg'
+        command = "docker run -v /home/toosyou/projects/porn_killer/data/dangerous:/dangerous --rm send_mail:direct "+receiver + " " + subject + " " + body + " " + attach_name
+        subprocess.Popen( command, shell=True, stdout=DEVNULL )
+        print(colored('\tdangerous mail send to '+receiver, 'yellow'))
+        return
+
 if __name__ == '__main__':
     app = tornado.web.Application(
         [
@@ -173,4 +203,5 @@ if __name__ == '__main__':
     app.listen(9999)
     ioloop.PeriodicCallback(handle_old_file, 60*1000).start()
     ioloop.PeriodicCallback(recover_gpu, gpu_recover_time*60*1000).start()
+    ioloop.PeriodicCallback(clear_last_watching_time, clear_lwt_time*60*1000).start()
     tornado.ioloop.IOLoop.current().start()
