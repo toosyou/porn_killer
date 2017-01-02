@@ -1,0 +1,341 @@
+/*
+    Colorbox Core Style:
+    The following CSS is consistent between example themes and should not be altered.
+*/
+#colorbox,
+#cboxOverlay,
+#cboxWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  overflow: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+}
+#cboxWrapper {
+  max-width: none;
+}
+#cboxOverlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+#cboxMiddleLeft,
+#cboxBottomLeft {
+  clear: left;
+}
+#cboxContent {
+  position: relative;
+}
+#cboxLoadedContent {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#cboxTitle {
+  margin: 0;
+}
+#cboxLoadingOverlay,
+#cboxLoadingGraphic {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#cboxPrevious,
+#cboxNext,
+#cboxClose,
+#cboxSlideshow {
+  cursor: pointer;
+}
+.cboxPhoto {
+  float: left;
+  margin: auto;
+  border: 0;
+  display: block;
+  max-width: none;
+  -ms-interpolation-mode: bicubic;
+}
+.cboxIframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+#colorbox,
+#cboxContent,
+#cboxLoadedContent {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+}
+/* 
+    User Style:
+    Change the following styles to modify the appearance of Colorbox.  They are
+    ordered & tabbed in a way that represents the nesting of the generated HTML.
+*/
+#colorbox {
+  outline: 0;
+}
+#cboxContent {
+  margin-top: 32px;
+  overflow: visible;
+  background: #000;
+}
+.cboxIframe {
+  background: #fff;
+}
+#cboxError {
+  padding: 50px;
+  border: 1px solid #ccc;
+}
+#cboxLoadedContent {
+  background: #000;
+  padding: 1px;
+}
+#cboxLoadingGraphic {
+  background: url("images/loading.gif") no-repeat center center;
+}
+#cboxLoadingOverlay {
+  background: #000;
+}
+#cboxTitle {
+  position: absolute;
+  top: -22px;
+  left: 0;
+  color: #000;
+}
+#cboxCurrent {
+  position: absolute;
+  top: -22px;
+  right: 205px;
+  text-indent: -9999px;
+}
+/* these elements are buttons, and may need to have additional styles reset to avoid unwanted base styles */
+#cboxPrevious,
+#cboxNext,
+#cboxSlideshow,
+#cboxClose {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  text-indent: -9999px;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: -20px;
+  background: url("images/controls.png") no-repeat 0 0;
+}
+/* avoid outlines on :active (mouseclick), but preserve outlines on :focus (tabbed navigating) */
+#cboxPrevious:active,
+#cboxNext:active,
+#cboxSlideshow:active,
+#cboxClose:active {
+  outline: 0;
+}
+#cboxPrevious {
+  background-position: 0px 0px;
+  right: 44px;
+}
+#cboxPrevious:hover {
+  background-position: 0px -25px;
+}
+#cboxNext {
+  background-position: -25px 0px;
+  right: 22px;
+}
+#cboxNext:hover {
+  background-position: -25px -25px;
+}
+#cboxClose {
+  background-position: -50px 0px;
+  right: 0;
+}
+#cboxClose:hover {
+  background-position: -50px -25px;
+}
+.cboxSlideshow_on #cboxPrevious,
+.cboxSlideshow_off #cboxPrevious {
+  right: 66px;
+}
+.cboxSlideshow_on #cboxSlideshow {
+  background-position: -75px -25px;
+  right: 44px;
+}
+.cboxSlideshow_on #cboxSlideshow:hover {
+  background-position: -100px -25px;
+}
+.cboxSlideshow_off #cboxSlideshow {
+  background-position: -100px 0px;
+  right: 44px;
+}
+.cboxSlideshow_off #cboxSlideshow:hover {
+  background-position: -75px -25px;
+}
+@import url("https://fonts.googleapis.com/css?family=Montserrat");
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background: #ffdd83;
+}
+.porn {
+  border: 2px solid #31bccc;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+.porn__container {
+  width: 100vw;
+  height: auto; 
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.porn__container .porn__search {
+  width: 100%;
+  height: 30px;
+  border: none;
+  margin-bottom: 60px;
+}
+.porn__container .porn__tabs {
+  width: 100%;
+  min-height: 50px;
+  background: #ffdd83;
+}
+.porn__container .porn__tabs ul {
+  padding: 0;
+  list-style-type: none;
+  flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.porn__container .porn__tabs ul .porn__tab {
+  margin: 5px 10px;
+  padding: 5px 30px;
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 30px;
+}
+.porn__container .porn__box__container {
+  width: 100%;
+  height: auto;
+  background: #ffdd83;
+}
+.porn__container .porn__box__container ul {
+  padding: 0;
+  list-style-type: none;
+  flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+.porn__container .porn__box__container ul li {
+  width: 45%;
+  height: 500px;
+  margin: 10px 0;
+  background: #e3f8ff;
+  list-style-type: none;
+  border: 3px solid #405983;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.porn__container .porn__box__container ul li h2,
+.porn__container .porn__box__container ul li .section,
+.porn__container .porn__box__container ul li h3,
+.porn__container .porn__box__container ul li img {
+  background: transparent;
+  color: #000;
+}
+.porn__container .porn__box__container ul li .section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.porn__container .porn__box__container ul li .section img {
+  width: 90%;
+}
+.porn__container .porn__box__container ul li.danger {
+  background: #ff6071;
+}
+input[type="text"] {
+  font-size: 50px;
+  font-family: 'Montserrat', sans-serif;
+}
+.mat-label {
+  display: block;
+  font-size: 30px;
+  transform: translateY(0px);
+  color: #31bccc;
+  transition: all 0.5s;
+  margin-bottom: -50px;
+}
+.mat-input {
+  position: relative;
+  background: transparent;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 8px 0;
+  font-size: 16px;
+}
+.mat-div {
+  position: relative;
+}
+.mat-div:after,
+.mat-div:before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #31bccc;
+  bottom: 0;
+  left: 0;
+  transition: all 0.5s;
+}
+.mat-div::after {
+  background-color: #50514f;
+  transform: scaleX(0);
+}
+.is-active::after {
+  transform: scaleX(1);
+}
+.is-active .mat-label {
+  color: #50514f;
+  margin-bottom: 0px;
+}
+.is-completed .mat-label {
+  font-size: 12px;
+  margin-bottom: 0px;
+  transform: translateY(0);
+}
+.blur {
+  filter: url("blur.svg#blur"); /* FireFox, Chrome, Opera */
+  -webkit-filter: blur(10px); /* Chrome, Opera */
+  -moz-filter: blur(10px);
+  -ms-filter: blur(10px);
+  filter: blur(10px);
+}
+.none {
+  filter: url("blur.svg#blur"); /* FireFox, Chrome, Opera */
+  -webkit-filter: blur(0px); /* Chrome, Opera */
+  -moz-filter: blur(0px);
+  -ms-filter: blur(0px);
+  filter: blur(0px);
+}
+.safe {
+  background: #e3f8ff;
+}
