@@ -181,7 +181,7 @@
 }
 
 body {
-    background: #ffdd83;
+    background: #f0fff0;
 }
 .porn {
   border: 2px solid #31bccc;
@@ -206,7 +206,7 @@ body {
 .porn__container .porn__tabs {
   width: 100%;
   min-height: 50px;
-  background: #ffdd83;
+  background: #f0fff0;
 }
 .porn__container .porn__tabs ul {
   padding: 0;
@@ -220,14 +220,15 @@ body {
 .porn__container .porn__tabs ul .porn__tab {
   margin: 5px 10px;
   padding: 5px 30px;
-  background: #fff;
+  background: #e6e6fa;
   border: 1px solid transparent;
   border-radius: 30px;
+  color: #4b0082;
 }
 .porn__container .porn__box__container {
   width: 100%;
   height: auto;
-  background: #ffdd83;
+  background: #f0fff0;
 }
 .porn__container .porn__box__container ul {
   padding: 0;
@@ -240,7 +241,7 @@ body {
 }
 .porn__container .porn__box__container ul li {
   width: 45%;
-  height: 500px;
+  padding-bottom: 5%;
   margin: 10px 0;
   background: #e3f8ff;
   list-style-type: none;

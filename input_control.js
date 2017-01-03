@@ -61,7 +61,10 @@ function getScreenshots(address,current) {
 				}
 				return false;
 			}else{
+				var id = '#' + address;
+				$(id).remove();
 				alert("error: " + request.status);
+				clearInterval(interval);
 			}
 		}
 	}
@@ -69,7 +72,7 @@ function getScreenshots(address,current) {
 	request.send();
 };
 
-setInterval(update,5000);
+var interval = setInterval(update,5000);
 function update(){
 	for(i = 0; i < porn_list.length; i++){
 		var request = new XMLHttpRequest();
@@ -182,7 +185,7 @@ function showChart(id){
 					showInLegend: true,
 					name: "Porn",
 					axisYType: "secondary",
-					color: "#F0E6A7",
+					color: "#FA8072",
 					dataPoints: 
 					[
 						{ y: 0, label: period_date_today },
@@ -194,7 +197,7 @@ function showChart(id){
 					showInLegend: true,
 					name: "Safe",
 					axisYType: "secondary",
-					color: "#7E8F74",
+					color: "#FFE1C7",
 					dataPoints: 
 					[
 						{ y: 0, label: period_date_today },
@@ -212,7 +215,7 @@ function showChart(id){
 							type: "stackedBar",
 							name: "Porn",
 							axisYType: "secondary",
-							color: "#F0E6A7",
+							color: "#FA8072",
 							dataPoints: [
 								{ y: parseInt(period_list_yesterday[i]) - parseInt(period_list_yesterday[i-1]), label: period_date_yesterday }
 							],
@@ -228,7 +231,7 @@ function showChart(id){
 							type: "stackedBar",
 							name: "Safe",
 							axisYType: "secondary",
-							color: "#7E8F74",
+							color: "#FFE1C7",
 							dataPoints: [
 								{ y: parseInt(period_list_yesterday[i]) - parseInt(period_list_yesterday[i-1]), label: period_date_yesterday }
 							]
@@ -245,7 +248,7 @@ function showChart(id){
 							type: "stackedBar",
 							name: "Porn",
 							axisYType: "secondary",
-							color: "#F0E6A7",
+							color: "#FA8072",
 							dataPoints: [
 								{ y: parseInt(period_list_today[i]) - parseInt(period_list_today[i-1]), label: period_date_today }
 							],
@@ -261,7 +264,7 @@ function showChart(id){
 							type: "stackedBar",
 							name: "Safe",
 							axisYType: "secondary",
-							color: "#7E8F74",
+							color: "#FFE1C7",
 							dataPoints: [
 								{ y: parseInt(period_list_today[i]) - parseInt(period_list_today[i-1]), label: period_date_today }
 							]
