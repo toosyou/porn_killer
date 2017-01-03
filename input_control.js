@@ -64,7 +64,6 @@ function getScreenshots(address,current) {
 				var id = '#' + address;
 				$(id).remove();
 				alert("error: " + request.status);
-				clearInterval(interval);
 			}
 		}
 	}
@@ -72,19 +71,21 @@ function getScreenshots(address,current) {
 	request.send();
 };
 
-var interval = setInterval(update,5000);
+setInterval(update,5000);
 function update(){
-	for(i = 0; i < porn_list.length; i++){
-		var request = new XMLHttpRequest();
-		request.onreadystatechange = function(){
+	for(var i = 0; i < porn_list.length; i++){
+		(function (i) {
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function(){
 			if(request.readyState == 4){
 				if(request.status == 200){
 					var data = JSON.parse(request.responseText);
 					var currentImg = data.photo.substring(2,data.photo.length-1);
 					var currentValue = Math.round(data.msg * 100);
-					var id_img = '#100' + porn_list[i-1];
-					var id_val = '#101' + porn_list[i-1];
-					var id_class = '#102' + porn_list[i-1];
+					var id_img = '#100' + porn_list[i];
+					var id_val = '#101' + porn_list[i];
+					var id_class = '#102' + porn_list[i];
+					console.log(i);
 					if(currentValue > 30){
 						$(id_img).attr( "class", "blur" );
 						$(id_class).attr( "class", "porn__box danger" );
@@ -94,14 +95,14 @@ function update(){
 					}
 					$(id_img).attr( "src", "data:img/png;base64," + currentImg );
 					$(id_val).html('色情率: ' + currentValue + '%');
-					return false;
 				}else{
 					alert("error: " + request.status);
 				}
+			}	
 			}
-		}
-		request.open("GET","http://140.113.89.234:8888/?MAC=" + porn_list[i] + "&PERIOD=0",true);
-		request.send();
+			request.open("GET","http://140.113.89.234:8888/?MAC=" + porn_list[i] + "&PERIOD=0",true);
+			request.send();
+		})(i);
 	}
 }
 
@@ -116,14 +117,14 @@ function showChart(id){
 	period_list_today.push("0");
 	var img_list_yesterday = [];
 	var img_list_today = [];
-	var total_time;
+	var total_time = 0;
 			
 	request.onreadystatechange = function(){
 		if(request.readyState == 4){
 			if(request.status == 200){
 				var data = JSON.parse(request.responseText);
 				period_count = data.periods.length;
-				period_date_today = data.periods[0].start.toString();
+				period_date_today = data.periods[period_count-1].start.toString();
 				period_date_today = period_date_today.substring(0,8);
 				period_date_yesterday = (parseInt(period_date_today)-1).toString();
 				total_time = data.total;
@@ -133,19 +134,150 @@ function showChart(id){
 					var temp_img;
 					temp_start = data.periods[i].start.toString();
 					temp_end = data.periods[i].end.toString();
-					temp_img = data.periods[i].photo.substring(0,data.periods[i].photo.length-1);
-					
+					temp_img = data.periods[i].photo;
 					if(temp_start.substring(0,8) == period_date_today){
 						period_list_today.push(temp_start.substring(8,12));
 						period_list_today.push(temp_end.substring(8,12));
 						img_list_today.push(temp_img);
-					}else if(temp_start.substring == period_date_yesterday){
+					}else if(temp_start.substring(0,8) == period_date_yesterday){
 						period_list_yesterday.push(temp_start.substring(8,12));
 						period_list_yesterday.push(temp_end.substring(8,12));
 						img_list_yesterday.push(temp_img);
 					}
 				}
-				return false;
+				$.colorbox({
+					html:'<div id="chartContainer" style="height: 200px; width: 1200px;"></div>',
+					onComplete:function () {
+						var chart = new CanvasJS.Chart("chartContainer", {
+							title: {
+								text: "Today's porn period (total: " + total_time + "min)"
+							},
+							animationEnabled: true,
+							axisX: {
+								interval: 1,
+								labelFontSize: 10,
+								lineThickness: 0
+							},
+							axisY2: {
+								valueFormatString: "00:00",
+								lineThickness: 0
+							},
+							toolTip: {
+								shared: false
+							},
+							legend: {
+								verticalAlign: "top",
+								horizontalAlign: "center"
+							},
+						
+							data: [
+								{
+								type: "stackedBar",
+								showInLegend: true,
+								name: "Porn",
+								axisYType: "secondary",
+								color: "#FA8072",
+								dataPoints: 
+								[
+									{ y: 0, label: period_date_yesterday },	
+									{ y: 0, label: period_date_today }							
+								]
+								},
+								{
+								type: "stackedBar",
+								showInLegend: true,
+								name: "Safe",
+								axisYType: "secondary",
+								color: "#FFE1C7",
+								dataPoints: 
+								[
+									{ y: 0, label: period_date_yesterday },	
+									{ y: 0, label: period_date_today }	
+								]
+								}
+							]
+						});
+						var porn_flag = 0;
+						for(i = 1; i < period_list_yesterday.length; i++){
+							if(porn_flag == 1){
+								porn_flag = 0;
+								chart.options.data.push(
+									{
+										type: "stackedBar",
+										name: "Porn",
+										axisYType: "secondary",
+										color: "#FA8072",
+										dataPoints: [
+											{ x: 0, y: parseInt(period_list_yesterday[i]) - parseInt(period_list_yesterday[i-1]), label: period_date_yesterday }
+										],
+										click: function(e){
+											for(j = 1; j < period_list_yesterday.length; j++){
+												var p = parseInt(period_list_yesterday[j]) - parseInt(period_list_yesterday[j-1]);
+												if(e.dataPoint.y == p){					
+													periodImg(img_list_yesterday[j/2-1]);
+													break;
+												}
+											}
+										}
+									}
+								);
+							}else{
+								porn_flag = true;
+								chart.options.data.push(
+									{
+										type: "stackedBar",
+										name: "Safe",
+										axisYType: "secondary",
+										color: "#FFE1C7",
+										dataPoints: [
+											{ x: 0, y: parseInt(period_list_yesterday[i]) - parseInt(period_list_yesterday[i-1]), label: period_date_yesterday }
+										]
+									}
+								);
+							}
+						}
+						porn_flag = 0;
+						for(i = 1; i < period_list_today.length; i++){
+							if(porn_flag == 1){
+								porn_flag = false;
+								chart.options.data.push(
+									{
+										type: "stackedBar",
+										name: "Porn",
+										axisYType: "secondary",
+										color: "#FA8072",
+										dataPoints: [
+											{ x: 1, y: parseInt(period_list_today[i]) - parseInt(period_list_today[i-1]), label: period_date_today }
+										],
+										click: function(e){
+											for(j = 1; j < period_list_today.length; j++){
+												var p = parseInt(period_list_today[j]) - parseInt(period_list_today[j-1]);
+												if(e.dataPoint.y == p){
+													periodImg(img_list_today[j/2-1]);
+													break;
+												}
+											}
+										}
+									}
+								);
+							}else{
+								porn_flag = true;
+								chart.options.data.push(
+									{
+										type: "stackedBar",
+										name: "Safe",
+										axisYType: "secondary",
+										color: "#FFE1C7",
+										dataPoints: [
+											{ x: 1, y: parseInt(period_list_today[i]) - parseInt(period_list_today[i-1]), label: period_date_today }
+										]
+									}
+								);
+							}
+						}
+						chart.render();
+					}
+				});
 			}else{
 				alert("error: " + request.status);
 			}
@@ -153,132 +285,12 @@ function showChart(id){
 	}
 	request.open("GET","http://140.113.89.234:8888/?MAC=" + id + "&PERIOD=1",true);
 	request.send();
-	
-	$.colorbox({
-		html:'<div id="chartContainer" style="height: 200px; width: 1200px;"></div>',
-		onComplete:function () {
-			var chart = new CanvasJS.Chart("chartContainer", {
-				title: {
-					text: "Today's porn period (total: " + total_time + "min)"
-				},
-				animationEnabled: true,
-				axisX: {
-					interval: 1,
-					labelFontSize: 10,
-					lineThickness: 0
-				},
-				axisY2: {
-					valueFormatString: "00:00",
-					lineThickness: 0
-				},
-				toolTip: {
-					shared: false
-				},
-				legend: {
-					verticalAlign: "top",
-					horizontalAlign: "center"
-				},
-			
-				data: [
-					{
-					type: "stackedBar",
-					showInLegend: true,
-					name: "Porn",
-					axisYType: "secondary",
-					color: "#FA8072",
-					dataPoints: 
-					[
-						{ y: 0, label: period_date_today },
-						{ y: 0, label: period_date_yesterday }		
-					]
-					},
-					{
-					type: "stackedBar",
-					showInLegend: true,
-					name: "Safe",
-					axisYType: "secondary",
-					color: "#FFE1C7",
-					dataPoints: 
-					[
-						{ y: 0, label: period_date_today },
-						{ y: 0, label: period_date_yesterday }	
-					]
-					}
-				]
-			});
-			var porn_flag = 0;
-			for(i = 1; i < period_list_yesterday.length; i++){
-				if(porn_flag == 1){
-					porn_flag = 0;
-					chart.options.data.push(
-						{
-							type: "stackedBar",
-							name: "Porn",
-							axisYType: "secondary",
-							color: "#FA8072",
-							dataPoints: [
-								{ y: parseInt(period_list_yesterday[i]) - parseInt(period_list_yesterday[i-1]), label: period_date_yesterday }
-							],
-							click: function(e){
-								periodImg(img_list_yesterday[(i/2)-1]);
-							}
-						}
-					);
-				}else{
-					porn_flag = true;
-					chart.options.data.push(
-						{
-							type: "stackedBar",
-							name: "Safe",
-							axisYType: "secondary",
-							color: "#FFE1C7",
-							dataPoints: [
-								{ y: parseInt(period_list_yesterday[i]) - parseInt(period_list_yesterday[i-1]), label: period_date_yesterday }
-							]
-						}
-					);
-				}
-			}
-			porn_flag = 0;
-			for(i = 1; i < period_list_today.length; i++){
-				if(porn_flag == 1){
-					porn_flag = false;
-					chart.options.data.push(
-						{
-							type: "stackedBar",
-							name: "Porn",
-							axisYType: "secondary",
-							color: "#FA8072",
-							dataPoints: [
-								{ y: parseInt(period_list_today[i]) - parseInt(period_list_today[i-1]), label: period_date_today }
-							],
-							click: function(e){
-								periodImg(img_list_today[(i-1)/2]);
-							}
-						}
-					);
-				}else{
-					porn_flag = true;
-					chart.options.data.push(
-						{
-							type: "stackedBar",
-							name: "Safe",
-							axisYType: "secondary",
-							color: "#FFE1C7",
-							dataPoints: [
-								{ y: parseInt(period_list_today[i]) - parseInt(period_list_today[i-1]), label: period_date_today }
-							]
-						}
-					);
-				}
-			}
-			chart.render();
-		}
-	});
 }
 
 function periodImg(img_data){
-	$.colorbox({
-		html:'<img id="myImg" src="data:img/png;base64,' + img_data + '" width="800" height="500" class="blur">'
-	});	
+	$(document).ready(function(){
+		$.colorbox({
+			html:'<img id="myImg" src="data:img/png;base64,' + img_data + '" width="800" height="500" class="blur">'
+		});
+	});
 }
