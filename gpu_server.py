@@ -3,6 +3,7 @@ import sys
 import tornado
 import tornado.web
 from tornado import httpserver
+import time
 
 sys.path.append('open_nsfw')
 import classify_nsfw
@@ -22,7 +23,9 @@ class MainHandler(tornado.web.RequestHandler):
         print('\tLength:', float(header_Length)/1024, 'KB')
 
         try:
+            calculate_start_time = time.time()
             scores = caffe_preprocess_and_compute(image, caffe_transformer=tranformer, caffe_net=net, output_layers=['prob'])
+            calculate_end_time = time.time()
         except:
             print('\tERROR OCCURED!')
             self.set_status(500)
@@ -30,6 +33,7 @@ class MainHandler(tornado.web.RequestHandler):
             return
 
         print('\tScore:', scores[1])
+        print('\tTime:', float(calculate_end_time - calculate_start_time), 's')
 
         self.add_header('Score', int(scores[1]*10000) )
         self.set_status(200)
