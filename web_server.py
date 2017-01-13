@@ -26,15 +26,6 @@ class MainHandler(tornado.web.RequestHandler):
 		if PERIOD=="0":
 			if(MAC in dics):
 			
-				"""
-				message = "Yooooo!"
-				with open("test.jpeg", "rb") as f:
-					img = base64.b64encode(f.read())
-					myres = {"photo":str(img),"msg":message}
-					myres = json.dumps(myres)
-					self.write(myres)
-				"""
-			
 				timestamp = dics[MAC]
 				fileName = timestamp+"_"+MAC
 				with open('../data_file/history/'+fileName+'.json') as data_file:    
@@ -75,7 +66,6 @@ class MainHandler(tornado.web.RequestHandler):
 				else:
 					if tt > current:
 						if tt-current>300:
-							#print("tt: "+str(tt)+" current: "+str(current))
 							time_dict = dict()
 							time_dict["start"]=start
 							time_dict["end"] = current
@@ -100,8 +90,6 @@ class MainHandler(tornado.web.RequestHandler):
 					img = base64.b64encode(f.read())
 				time_dict["photo"] = str(img)
 				period_list.append(time_dict.copy())
-			#for item in period_list:
-				#print(item)			
 
 			total_period = len(time_list)*3/60
 			myres = {"total":total_period, "periods":period_list}
@@ -118,7 +106,6 @@ class MainHandler(tornado.web.RequestHandler):
 			else:
 				dics[key] = data_json[key]
 
-		#print(dics)
 		self.write("ok")
 
 def make_app():
