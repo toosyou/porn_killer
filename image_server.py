@@ -81,6 +81,7 @@ class MainHandler(tornado.web.RequestHandler):
         print('\tMAC:', colored(header_MAC, 'green'), 'Time:', header_Time, 'Length:', float(header_Length)/1024, 'KB')
 
         # get score from gpu servers
+        start_time = time.time()
         this_index_gpu = self.get_index()
         if this_index_gpu == -1: # no gpu server avaliable
             print(colored('\tNO GPU SERVER AVALIABLE! DROP!', 'red', attrs=['bold']))
@@ -129,6 +130,8 @@ class MainHandler(tornado.web.RequestHandler):
             last_watching_time[header_MAC] = int(header_Time)
             self.send_dangerous_mail(header_MAC, score, header_Time)
 
+        end_time = time.time()
+        print('\tCalculating time:', float(end_time - start_time), 's')
         return
 
     def gpu_succeed(self, this_index_gpu):
